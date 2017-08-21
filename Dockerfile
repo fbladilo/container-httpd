@@ -58,7 +58,7 @@ RUN yum -y install centos-release-scl-rh httpd cronie && \
 #     rm -vf /lib/systemd/system/basic.target.wants/* && \
 #     rm -vf /lib/systemd/system/anaconda.target.wants/*
 
-RUN MASK_JOBS="sys-fs-fuse-connections.mount getty.target systemd-initctl.socket" && \
+RUN MASK_JOBS="sys-fs-fuse-connections.mount getty.target systemd-initctl.socket proc-fs-nfsd.mount var-lib-nfs-rpc_pipefs.mount" && \
     systemctl mask ${MASK_JOBS} && \
     for i in ${MASK_JOBS}; do find /usr/lib/systemd/ -iname $i | grep ".wants" | xargs rm -f; done && \
     rm -f /etc/fstab && \
@@ -67,7 +67,7 @@ RUN MASK_JOBS="sys-fs-fuse-connections.mount getty.target systemd-initctl.socket
 ## Remove any existing configurations
 RUN rm -f /etc/httpd/conf.d/*
 
-COPY docker-assets/entrypoint /usr/bin
+#COPY docker-assets/entrypoint /usr/bin
 
 EXPOSE 80
 
@@ -75,7 +75,7 @@ WORKDIR /etc/httpd
 
 VOLUME /var/log/httpd /tmp /run
 
-RUN systemctl enable dbus httpd
+RUN systemctl enable httpd
 
-ENTRYPOINT [ "entrypoint" ]
+#ENTRYPOINT [ "entrypoint" ]
 CMD [ "/sbin/init" ]
